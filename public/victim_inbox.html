@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Victim's Inbox</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; color: #333; padding: 2rem; }
+        h1 { color: #1a73e8; }
+        .container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 800px; margin: auto; }
+        button { background: #1a73e8; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; cursor: pointer; transition: background 0.3s; margin-bottom: 1rem; }
+        #mail-list { list-style-type: none; padding: 0; }
+        .email { border: 1px solid #ddd; border-radius: 5px; padding: 1rem; margin-bottom: 1rem; background: #fafafa; }
+        .email-time { font-size: 0.8rem; color: #777; }
+        .email-body { margin-top: 0.5rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>受信箱 (victim@example.com)</h1>
+        <button onclick="checkMail()">メールをチェック</button>
+        <ul id="mail-list"></ul>
+    </div>
+
+    <script>
+        const mailList = document.getElementById('mail-list');
+        const userEmail = 'victim@example.com';
+
+        async function checkMail() {
+            const response = await fetch(`/api/mailbox/${userEmail}`);
+            const mails = await response.json();
+            mailList.innerHTML = ''; // Clear list
+
+            if (mails.length === 0) {
+                mailList.innerHTML = '<li>受信トレイは空です。</li>';
+                return;
+            }
+
+            mails.reverse().forEach(mail => {
+                const item = document.createElement('li');
+                item.className = 'email';
+                item.innerHTML = `
+                    <div class="email-time">${new Date(mail.time).toLocaleString()}</div>
+                    <div class="email-body">${mail.message}</div>
+                `;
+                mailList.appendChild(item);
+            });
+        }
+
+        // Initial check
+        checkMail();
+    </script>
+</body>
+</html>

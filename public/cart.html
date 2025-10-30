@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <style>
+        .header {
+            background-color: #232F3E;
+            padding: 8px 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .header-nav {
+            color: #FFFFFF;
+            font-size: 14px;
+        }
+        body { font-family: "Amazon Ember", Arial, sans-serif; background-color: #EAEDED; margin: 0; padding: 0; }
+        .cart-container { display: flex; max-width: 1200px; margin: 20px auto; gap: 20px; align-items: flex-start; }
+        .cart-items { flex: 3; background-color: #FFF; padding: 20px; border-radius: 8px; }
+        .order-summary { flex: 1; background-color: #FFF; padding: 20px; border-radius: 8px; }
+        h1 { font-size: 28px; font-weight: 400; border-bottom: 1px solid #DDD; padding-bottom: 10px; }
+        .item-list { list-style: none; padding: 0; }
+        .item { display: flex; gap: 15px; border-bottom: 1px solid #DDD; padding: 15px 0; }
+        .item-img-placeholder { width: 100px; height: 100px; background-color: #F7F7F7; border-radius: 4px; }
+        .item-details { flex: 1; }
+        .item-title { font-size: 18px; color: #0F1111; }
+        .item-price { font-weight: bold; }
+        .checkout-btn {
+            background-color: #FFD814;
+            border-color: #FCD200;
+            border-radius: 8px;
+            border-style: solid;
+            border-width: 1px;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 10px 20px;
+            text-align: center;
+            width: 100%;
+            box-shadow: 0 2px 5px 0 rgba(213,217,217,.5);
+        }
+        .checkout-btn:hover { background-color: #F7CA00; }
+        .checkout-btn:disabled { background: #EAEAEA; cursor: not-allowed; }
+        #status { margin-top: 1.5rem; font-size: 14px; color: #555; line-height: 1.6; }
+        .spinner { border: 4px solid rgba(0,0,0,0.1); width: 24px; height: 24px; border-radius: 50%; border-left-color: #007185; animation: spin 1s ease infinite; margin: 1rem auto 0; display: none; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-nav">
+            <span>こんにちは, Victim</span>
+        </div>
+    </div>
+    <div class="cart-container">
+        <div class="cart-items">
+            <h1>ショッピングカート</h1>
+            <ul class="item-list">
+                <li class="item">
+                    <div class="item-img-placeholder"></div>
+                    <div class="item-details">
+                        <div class="item-title">10,000円 デジタルギフトカード</div>
+                        <div class="item-price">￥10,000</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="order-summary">
+            <h2>注文概要</h2>
+            <p>小計 (1点): ￥10,000</p>
+            <button id="buyButton" class="checkout-btn">購入を確定する</button>
+            <div id="status"></div>
+            <div class="spinner" id="spinner"></div>
+        </div>
+    </div>
+
+    <script>
+        const buyButton = document.getElementById('buyButton');
+        const statusDiv = document.getElementById('status');
+        const spinner = document.getElementById('spinner');
+        const userEmail = 'victim@example.com';
+
+        buyButton.addEventListener('click', async () => {
+            buyButton.disabled = true;
+            statusDiv.innerHTML = '購入処理を開始します...';
+            spinner.style.display = 'block';
+
+            try {
+                const purchaseResponse = await fetch('/api/purchase', { method: 'POST' });
+                if (!purchaseResponse.ok) throw new Error('Purchase request failed');
+                
+                const { requestID } = await purchaseResponse.json();
+                statusDiv.innerHTML = `購入リクエスト承認。<br>Request ID: <strong>${requestID}</strong><br>5秒後に引き換えます...`;
+
+                setTimeout(async () => {
+                    statusDiv.innerHTML = `ID: <strong>${requestID}</strong> を引き換え中...`;
+                    
+                    const redeemResponse = await fetch('/api/redeem', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ requestID, email: userEmail })
+                    });
+
+                    const result = await redeemResponse.json();
+                    spinner.style.display = 'none';
+
+                    if (redeemResponse.ok) {
+                        statusDiv.innerHTML = `引き換え成功！<br><a href="/victim_inbox.html" target="_blank">受信箱で確認</a>`;
+                    } else {
+                        statusDiv.innerHTML = `失敗。<br><strong style="color: red;">${result.message}</strong><br>先に引き換えられた可能性があります。`;
+                    }
+                    buyButton.disabled = false;
+                }, 5000);
+
+            } catch (error) {
+                spinner.style.display = 'none';
+                statusDiv.textContent = `エラー: ${error.message}`;
+                buyButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

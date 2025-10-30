@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gift Card Shop</title>
+    <style>
+        .header {
+            background-color: #232F3E;
+            padding: 8px 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .header-nav {
+            color: #FFFFFF;
+            font-size: 14px;
+        }
+        body { font-family: "Amazon Ember", Arial, sans-serif; background-color: #EAEDED; margin: 0; padding: 0; }
+        .container { max-width: 1000px; margin: 20px auto; background-color: #FFF; padding: 20px; border-radius: 8px; }
+        h1 { font-size: 28px; font-weight: 400; }
+        .product-grid { display: flex; gap: 20px; }
+        .product-image-container { flex: 1; }
+        .product-image-placeholder { width: 100%; height: 300px; background-color: #F7F7F7; border: 1px solid #E7E7E7; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #AAA; font-size: 20px; }
+        .product-details { flex: 2; padding-left: 20px; }
+        .product-title { font-size: 24px; color: #0F1111; }
+        .product-price { font-size: 28px; color: #B12704; margin: 10px 0; }
+        .add-to-cart-box {
+            border: 1px solid #DDD;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .add-to-cart-btn {
+            background-color: #FFD814;
+            border-color: #FCD200;
+            border-radius: 20px;
+            border-style: solid;
+            border-width: 1px;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 10px 20px;
+            text-align: center;
+            width: 100%;
+            box-shadow: 0 2px 5px 0 rgba(213,217,217,.5);
+        }
+        .add-to-cart-btn:hover { background-color: #F7CA00; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-nav">
+            <span>こんにちは, Victim</span>
+        </div>
+    </div>
+    <div class="container">
+        <h1>商品詳細</h1>
+        <div class="product-grid">
+            <div class="product-image-container">
+                <div class="product-image-placeholder">GIFT CARD</div>
+            </div>
+            <div class="product-details">
+                <h2 class="product-title">10,000円 デジタルギフトカード</h2>
+                <div class="product-price">￥10,000</div>
+                <p>この商品はデジタルギフトカードです。購入後、登録されたメールアドレスにバウチャーが送信されます。</p>
+                <div class="add-to-cart-box">
+                     <button class="add-to-cart-btn" onclick="addToCart()">カートに入れる</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addToCart() {
+            window.location.href = '/cart.html';
+        }
+    </script>
+</body>
+</html>
